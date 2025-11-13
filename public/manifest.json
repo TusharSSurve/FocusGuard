@@ -1,0 +1,23 @@
+{
+    "manifest_version": 3,
+    "name": "Distraction Blocker",
+    "description": "Block distracting sites with a focus timer",
+    "version": "1.0",
+    "action": {
+        "default_popup": "index.html",
+        "default_icon": {
+            "48": "vite.svg"
+        }
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+        "storage",
+        "alarms",
+        "declarativeNetRequest"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ]
+}
