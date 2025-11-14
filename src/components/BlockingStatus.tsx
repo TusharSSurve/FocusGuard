@@ -21,14 +21,14 @@ export const BlockingStatus = ({ isActive, remainingTime, blockedCount }: Blocki
   return (
     <Card className={cn(
       "p-4 transition-all",
-      isActive ? "bg-success/10 border-success" : "bg-muted/50"
+      isActive ? "bg-green-600/10 border-green-600" : "bg-muted/50"
     )}>
       <div className="flex items-center gap-3">
         <div className={cn(
           "p-2 rounded-full",
-          isActive ? "bg-success text-success-foreground" : "bg-muted text-muted-foreground"
+          isActive ? "bg-green-600 text-success-foreground" : "bg-muted text-muted-foreground"
         )}>
-          {isActive ? <Shield className="h-5 w-5" /> : <ShieldOff className="h-5 w-5" />}
+          {isActive ? <Shield className="h-5 w-5 text-white" /> : <ShieldOff className="h-5 w-5" />}
         </div>
         <div className="flex-1">
           <p className="font-semibold text-sm">

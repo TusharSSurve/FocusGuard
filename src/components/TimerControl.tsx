@@ -7,8 +7,8 @@ interface TimerControlProps {
 }
 
 const DURATION_OPTIONS = [
-  { label: "15 min", value: 15 },
-  { label: "30 min", value: 30 },
+  { label: "15 mins", value: 15 },
+  { label: "30 mins", value: 30 },
   { label: "1 hour", value: 60 },
   { label: "2 hours", value: 120 },
 ];
@@ -17,7 +17,7 @@ export const TimerControl = ({ selectedDuration, onDurationChange }: TimerContro
   return (
     <div className="space-y-3">
       <label className="text-sm font-medium">Block Duration</label>
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-2 mt-2">
         {DURATION_OPTIONS.map((option) => (
           <Button
             key={option.value}

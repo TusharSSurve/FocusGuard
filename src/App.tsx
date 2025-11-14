@@ -7,6 +7,7 @@ import { BlockedSitesList } from "./components/BlockedSitesList";
 import { AddWebsiteForm } from "./components/AddWebsiteForm";
 import { Separator } from "@radix-ui/react-separator";
 import { TimerControl } from "./components/TimerControl";
+import { v4 as uuidv4 } from 'uuid';
 
 interface BlockedSite {
   id: string;
@@ -14,16 +15,27 @@ interface BlockedSite {
 }
 
 function App() {
-  const [sites, setSites] = useState<string[]>([]);
-  const [input, setInput] = useState('');
-  const [blockedSites, setBlockedSites] = useState<BlockedSite[]>([
-    { id: "1", url: "youtube.com" },
-    { id: "2", url: "facebook.com" },
-    { id: "3", url: "twitter.com" },
-  ]);
+  const [sites, setSites] = useState<BlockedSite[]>([]);
   const [isBlocking, setIsBlocking] = useState(false);
   const [duration, setDuration] = useState(30);
   const [remainingTime, setRemainingTime] = useState<number | undefined>();
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (isBlocking && remainingTime !== undefined && remainingTime > 0) {
+      const interval = setInterval(() => {
+        setRemainingTime((prev) => {
+          if (prev === undefined || prev <= 1) {
+            setIsBlocking(false);
+            return undefined;
+          }
+          return prev - 1;
+        });
+      }, 60000);
+
+      return () => clearInterval(interval);
+    }
+  }, [isBlocking, remainingTime]);
 
   useEffect(() => {
     chrome?.storage?.local.get('blocklist').then(({ blocklist }) => {
@@ -31,89 +43,85 @@ function App() {
     })
   }, [])
 
-  const addSite = async () => {
-    const updated = [...sites, input];
-    await chrome?.storage?.local.set({ blockList: updated });
-    setSites(updated);
-    setInput('');
-    chrome.runtime.sendMessage({ action: 'updateRules', sites: updated });
+  const addSite = async (input: string) => {
+    const uniqueId = uuidv4();
+    const existingSite = sites.find(site => site.url.includes(input));
+    if (!existingSite) {
+      const updated = [...sites, { id: uniqueId, url: input }];
+      await chrome?.storage?.local.set({ blockList: updated });
+      setSites(updated);
+      chrome.runtime.sendMessage({ action: 'updateRules', sites: updated });
+    } else setError("Website URL already exist");
   };
 
   const removeSite = async (siteToRemove: string) => {
-    const updated = sites.filter(site => site !== siteToRemove);
+    const updated = sites.filter(site => site.id !== siteToRemove);
     await chrome?.storage?.local.set({ blockList: updated });
     setSites(updated);
     chrome.runtime.sendMessage({ action: 'updateRules', sites: updated });
   };
 
+  const handleToggleBlocking = () => {
+    if (!isBlocking) {
+      if (sites.length === 0) {
+        return;
+      }
+      setRemainingTime(duration);
+      setIsBlocking(true);
+    } else {
+      setIsBlocking(false);
+      setRemainingTime(undefined);
+    }
+  };
+
   return (
-    <div>
-      <h2>Blocklist</h2>
-      <input value={input} onChange={(e) => setInput(e.target.value)} />
-      <button onClick={addSite}>Add</button>
-      <ul>
-        {sites.map(site => (
-          <li key={site}>
-            {site}
-            <button onClick={() => removeSite(site)}>Remove</button>
-          </li>
-        ))}
-      </ul>
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="space-y-1">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-2xl font-bold">Focus Guard</CardTitle>
-            <Button variant="ghost" size="icon">
-              <Settings className="h-5 w-5" />
-            </Button>
+    <Card className="w-full max-w-md shadow-lg">
+      <CardHeader className="space-y-1">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-2xl font-bold">Focus Guard</CardTitle>
+        </div>
+        <CardDescription>
+          Block distracting websites and stay focused
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-6">
+        <BlockingStatus
+          isActive={isBlocking}
+          remainingTime={remainingTime}
+          blockedCount={sites.length}
+        />
+        <div className="space-y-4">
+          <div>
+            <h3 className="text-sm font-semibold mb-2">Blocked Websites</h3>
+            <BlockedSitesList sites={sites} onRemove={removeSite} />
           </div>
-          <CardDescription>
-            Block distracting websites and stay focused
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <BlockingStatus
-            isActive={isBlocking}
-            remainingTime={remainingTime}
-            blockedCount={blockedSites.length}
-          />
-          <div className="space-y-4">
-            <div>
-              <h3 className="text-sm font-semibold mb-3">Blocked Websites</h3>
-              <BlockedSitesList sites={blockedSites} onRemove={() => { }} />
-            </div>
-
-            <AddWebsiteForm onAdd={() => { }} />
-          </div>
-          <Separator />
-          <TimerControl
-            selectedDuration={duration}
-            onDurationChange={setDuration}
-          />
-          <Button
-            onClick={() => { }}
-            className="w-full h-12 text-base font-semibold"
-            size="lg"
-          >
-            {isBlocking ? (
-              <>
-                <Pause className="mr-2 h-5 w-5" />
-                Pause Blocking
-              </>
-            ) : (
-              <>
-                <Play className="mr-2 h-5 w-5" />
-                Start Blocking
-              </>
-            )}
-          </Button>
-
-          <p className="text-xs text-center text-muted-foreground">
-            This is a demo interface. Integrate with Chrome Extension API for full functionality.
-          </p>
-        </CardContent>
-      </Card>
-    </div>
+          <AddWebsiteForm onAdd={addSite} onChange={() => setError("")} />
+          {error && <p className="text-center text-red-500 text-sm">{error}</p>}
+        </div>
+        <Separator />
+        <TimerControl
+          selectedDuration={duration}
+          onDurationChange={setDuration}
+        />
+        <Button
+          onClick={handleToggleBlocking}
+          className="w-full h-12 text-base font-semibold"
+          size="lg"
+        >
+          {isBlocking ? (
+            <>
+              <Pause className="mr-2 h-5 w-5" />
+              Pause Blocking
+            </>
+          ) : (
+            <>
+              <Play className="mr-2 h-5 w-5" />
+              Start Blocking
+            </>
+          )}
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
 
