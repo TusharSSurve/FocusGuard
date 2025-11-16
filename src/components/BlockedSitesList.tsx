@@ -10,9 +10,10 @@ interface BlockedSite {
 interface BlockedSitesListProps {
   sites: BlockedSite[];
   onRemove: (id: string) => void;
+  isActive: boolean;
 }
 
-export const BlockedSitesList = ({ sites, onRemove }: BlockedSitesListProps) => {
+export const BlockedSitesList = ({ sites, onRemove, isActive }: BlockedSitesListProps) => {
   if (sites.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -36,6 +37,7 @@ export const BlockedSitesList = ({ sites, onRemove }: BlockedSitesListProps) => 
               size="sm"
               onClick={() => onRemove(site.id)}
               className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity"
+              disabled={isActive}
             >
               <X className="h-4 w-4" />
             </Button>
