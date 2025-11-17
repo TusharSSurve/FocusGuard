@@ -15,7 +15,7 @@ interface BlockedSite {
   url: string;
 }
 
-function App() {
+export default function App() {
   const [sites, setSites] = useState<BlockedSite[]>([]);
   const [isBlocking, setIsBlocking] = useState(false);
   const [duration, setDuration] = useState(30);
@@ -151,5 +151,3 @@ function App() {
     </Card>
   );
 }
-
-export default App
