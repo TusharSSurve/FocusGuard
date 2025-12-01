@@ -1,73 +1,102 @@
-# React + TypeScript + Vite
+# 🚫 Distraction Blocker Chrome Extension (React + Chrome APIs)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Distraction Blocker is a lightweight and effective **Chrome extension** designed to help you stay focused by **blocking distracting websites** for a chosen amount of time. Built using **React** and **Chrome Extension APIs**, it provides a smooth UI and reliable background functionality to keep procrastination away.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ Features
 
-## React Compiler
+* 🔒 **Block distracting websites** for a specified duration
+* ⏳ **Custom timer** to control how long sites stay blocked
+* ⚙️ Uses **Chrome Storage API** to save preferences
+* 🔧 Built with **React** for a modern and responsive interface
+* 🛠️ Uses **Chrome Extension APIs** (background scripts, permissions, tabs, alarms)
+* 🚀 Simple, fast, and privacy-friendly (everything stays on your device)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🧩 How It Works
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+1. Enter websites you want to block (e.g., *youtube.com*, *instagram.com*).
+2. Choose a blocking duration (e.g., 15 min, 1 hour, etc.).
+3. Distraction Blocker activates and prevents you from opening those websites until the timer ends.
+4. Once the timer expires, the sites become accessible again.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+The extension runs using:
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+* **React UI** for configuration and interaction
+* **Background service worker** using Chrome Extension API to enforce blocking
+* **Chrome alarms** to manage timers
+* **Chrome storage** for persistent settings
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 📦 Tech Stack
+
+* **React** (UI)
+* **TypeScript**
+* **Chrome Extension Manifest v3**
+* **Chrome APIs** (tabs, alarms, storage, declarativeNetRequest or webNavigation)
+
+---
+
+## 📁 Project Structure (example)
+
+```
+/public
+  ├─ manifest.json
+  ├─ icon.png
+/src
+  ├─ components/
+  ├─ lib/
+  ├─ types/
+  ├─ background.js
+  ├─ App.tsx
+  ├─ main.tsx
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 Installation (Development Mode)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+1. Clone the repository:
+
+   ```bash
+   git clone https://github.com/TusharSSurve/Distraction_Blocker.git
+   cd Distraction_Blocker
+   ```
+2. Install dependencies:
+
+   ```bash
+   npm install
+   ```
+3. Build the project:
+
+   ```bash
+   npm run build
+   ```
+4. Load the extension in Chrome:
+
+   * Open **chrome://extensions/**
+   * Enable **Developer mode**
+   * Click **Load unpacked**
+   * Select the `build/` folder
+
+---
+
+## 🛡️ Permissions Used
+
+* `tabs` — To detect and block navigation
+* `storage` — To store website lists and timer data
+* `alarms` — To handle block duration timers
+* `declarativeNetRequest` — To block site access
+
+---
+
+## 📄 License
+
+MIT License.
+
+---
+
+Just let me know!
