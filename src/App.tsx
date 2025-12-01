@@ -49,6 +49,22 @@ export default function App() {
   }, [isBlocking, remainingTime]);
 
   useEffect(() => {
+    const interval = setInterval(() => {
+      chrome.storage.local.get(["isBlocking", "blockingEndsAt"]).then((res) => {
+        setIsBlocking(res.isBlocking ?? false);
+        if (res.blockingEndsAt) {
+          const minsLeft = Math.ceil((res.blockingEndsAt - Date.now()) / 60000);
+          setRemainingTime(minsLeft > 0 ? minsLeft : undefined);
+        } else {
+          setRemainingTime(undefined);
+        }
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
     chrome?.storage?.local.get('blocklist').then(({ blocklist }) => {
       if (blocklist) setSites(blocklist);
     })
@@ -77,9 +93,23 @@ export default function App() {
       if (sites.length === 0) {
         return;
       }
-      setRemainingTime(duration);
+      const when = Date.now() + duration * 60 * 1000;
+      chrome.alarms.create("blockingTimer", { delayInMinutes: duration });
+      chrome.storage.local.set({
+        isBlocking: true,
+        blocklist: sites,
+        blockingEndsAt: when,
+      });
+      chrome.runtime.sendMessage({ action: "updateRules", sites });
       setIsBlocking(true);
+      setRemainingTime(duration);
     } else {
+      chrome.alarms.clear("blockingTimer");
+      chrome.storage.local.set({
+        isBlocking: false,
+        blockingEndsAt: null,
+      });
+      chrome.runtime.sendMessage({ action: "clearRules" });
       setIsBlocking(false);
       setRemainingTime(undefined);
     }
