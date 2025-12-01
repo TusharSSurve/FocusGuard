@@ -1,6 +1,6 @@
 {
     "manifest_version": 3,
-    "name": "Distraction Blocker",
+    "name": "FocusGuard",
     "description": "Block distracting sites with a focus timer",
     "version": "1.0",
     "action": {
