@@ -2,6 +2,10 @@
 
 FocusGuard is a lightweight and effective **Chrome extension** designed to help you stay focused by **blocking distracting websites** for a chosen amount of time. Built using **React** and **Chrome Extension APIs**, it provides a smooth UI and reliable background functionality to keep procrastination away.
 
+## Demo
+
+https://github.com/user-attachments/assets/86d6c0ad-2d81-421b-9e0a-2823a2f9e73d
+
 ---
 
 ## ✨ Features
